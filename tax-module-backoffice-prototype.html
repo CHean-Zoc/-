@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>稅收與相關稅賦管理後台原型</title>
+  <style>
+    :root {
+      --orange: #df561f;
+      --orange-soft: #f4b69d;
+      --green: #416f64;
+      --cream: #fff4df;
+      --side: #fff8ed;
+      --line: #d8d8d8;
+      --text: #111;
+      --muted: #666;
+      --bg: #eef0f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      font-size: 16px;
+    }
+    .topbar {
+      height: 86px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 26px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.1);
+    }
+    .brand { display: flex; align-items: center; gap: 28px; }
+    .brand-mark {
+      width: 146px;
+      height: 50px;
+      border-left: 8px solid var(--orange);
+      display: flex;
+      align-items: center;
+      padding-left: 12px;
+      line-height: 1.25;
+      font-weight: 700;
+      color: #555;
+    }
+    .title { font-size: 30px; font-weight: 800; letter-spacing: 0; }
+    .user { display: flex; gap: 18px; align-items: center; font-weight: 700; }
+    .bell {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #ffe8ca;
+      color: var(--orange);
+      display: grid;
+      place-items: center;
+      position: relative;
+      font-size: 24px;
+    }
+    .bell::after {
+      content: "8";
+      position: absolute;
+      top: -8px;
+      right: -2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: #fff;
+      font-size: 14px;
+      display: grid;
+      place-items: center;
+    }
+    .shell { display: grid; grid-template-columns: 230px minmax(960px, 1fr); min-height: calc(100vh - 86px); }
+    .sidebar { background: var(--side); padding-top: 56px; }
+    .nav-section { padding: 14px 16px; font-weight: 800; display: flex; justify-content: space-between; }
+    .nav-section.active { background: var(--orange); color: #fff; }
+    .nav-item { padding: 10px 16px 10px 39px; font-weight: 700; }
+    .nav-item.hot { color: var(--orange); }
+    .nav-item.current { background: var(--orange-soft); color: #111; }
+    .main { padding: 0 0 84px; }
+    .page { width: min(1440px, calc(100vw - 300px)); margin: 0 auto; background: #fff; min-height: 640px; }
+    .breadcrumb { height: 50px; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 8px; padding: 0 24px; font-weight: 700; }
+    .content { padding: 28px 24px 64px; }
+    .collapse-title {
+      color: var(--orange);
+      font-size: 18px;
+      font-weight: 800;
+      border-bottom: 2px solid var(--orange);
+      display: inline-block;
+      margin: 0 0 22px;
+      padding-bottom: 4px;
+    }
+    .search {
+      background: var(--cream);
+      padding: 28px 30px;
+      border-radius: 4px;
+      margin-bottom: 38px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 22px 16px;
+    }
+    label { display: block; font-weight: 800; margin-bottom: 8px; }
+    select, input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      padding: 0 12px;
+      background: #fff;
+      font-size: 16px;
+    }
+    .search-actions { display: flex; justify-content: center; margin-top: 28px; }
+    .btn {
+      border: 0;
+      border-radius: 5px;
+      min-height: 36px;
+      padding: 7px 13px;
+      font-weight: 800;
+      cursor: default;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--green); color: #fff; }
+    .btn-outline { background: #fff; color: var(--green); border: 1px solid var(--green); }
+    .btn-danger { background: #fff; color: #b42318; border: 1px solid #b42318; }
+    .tablebar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; }
+    .count { font-weight: 800; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; vertical-align: middle; }
+    th { background: #f7f7f7; font-weight: 800; }
+    td { background: #fff; }
+    .pill {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      border-radius: 99px;
+      padding: 2px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      margin: 2px 4px 2px 0;
+    }
+    .pill.orange { background: #fff1e8; color: #b54708; border: 1px solid #f5c49b; }
+    .pill.green { background: #e8f3ef; color: #286354; border: 1px solid #b8d8cf; }
+    .pill.red { background: #fff0f0; color: #b42318; border: 1px solid #f3b4b4; }
+    .pill.gray { background: #f2f4f7; color: #555; border: 1px solid #ddd; }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tabs { display: flex; gap: 8px; border-bottom: 2px solid #ddd; margin: 40px 0 18px; }
+    .tab { padding: 10px 16px; font-weight: 800; border: 1px solid #ddd; border-bottom: 0; background: #f8f8f8; border-radius: 4px 4px 0 0; }
+    .tab.active { background: #fff; color: var(--orange); border-top: 3px solid var(--orange); }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .panel { border: 1px solid #ddd; border-radius: 4px; overflow: hidden; background: #fff; }
+    .panel h3 { margin: 0; padding: 12px 14px; background: #f7f7f7; font-size: 17px; }
+    .kv { display: grid; grid-template-columns: 150px 1fr; border-top: 1px solid #eee; }
+    .kv div { padding: 10px 12px; }
+    .kv div:first-child { font-weight: 800; background: #fcfcfc; }
+    .timeline { border-left: 4px solid #e6e6e6; margin: 10px 0 4px 16px; padding-left: 16px; }
+    .step { margin: 0 0 16px; position: relative; }
+    .step::before {
+      content: "";
+      position: absolute;
+      left: -26px;
+      top: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 1px var(--green);
+    }
+    .component-note {
+      margin-top: 42px;
+      padding: 16px;
+      border: 1px dashed #999;
+      background: #fff;
+      color: #333;
+    }
+    .copy-unit { outline: 2px dashed transparent; }
+    .copy-unit:hover { outline-color: var(--orange); }
+    @media (max-width: 1100px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .page { width: 100%; }
+      .form-grid, .detail-grid { grid-template-columns: 1fr; }
+      .title { font-size: 22px; }
+      .brand-mark { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">桃園市住宅及<br>都市更新中心</div>
+      <div class="title">桃園市住宅及都市更新中心可負擔住宅業務管理平台</div>
+    </div>
+    <div class="user">
+      <div>14:56</div>
+      <div class="bell">●</div>
+      <div>歡迎 系統開發商 真_天思數位科技 登入系統⌄</div>
+    </div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="nav-section">購屋案件管理專區 <span>⌄</span></div>
+      <div class="nav-item">申請案件管理</div>
+      <div class="nav-item">選屋與簽約管理</div>
+      <div class="nav-item current">稅收與相關稅賦管理</div>
+      <div class="nav-section">社區及選屋作業管理 <span>⌄</span></div>
+      <div class="nav-section active">系統維護管理 <span>⌃</span></div>
+      <div class="nav-item hot">★ 大樓管理</div>
+      <div class="nav-item">大樓戶號管理</div>
+      <div class="nav-item">附件範本維護</div>
+      <div class="nav-section">資料維護管理專區 <span>⌄</span></div>
+    </aside>
+    <main class="main">
+      <section class="page">
+        <div class="breadcrumb">▣ 購屋案件管理專區 / 稅收與相關稅賦管理</div>
+        <div class="content">
+          <section class="copy-unit" data-axure-unit="查詢條件">
+            <h2 class="collapse-title">查詢條件</h2>
+            <div class="search">
+              <div class="form-grid">
+                <div>
+                  <label>社區大樓</label>
+                  <select><option>全部</option><option>航空城A11</option></select>
+                </div>
+                <div>
+                  <label>棟別/戶號</label>
+                  <input value="" placeholder="例：A棟 / A10F219">
+                </div>
+                <div>
+                  <label>申請人/購買人</label>
+                  <input placeholder="姓名或申請編號">
+                </div>
+                <div>
+                  <label>售購階段</label>
+                  <select><option>全部</option><option>買房前</option><option>買房中</option><option>持有中</option><option>出售清算</option></select>
+                </div>
+                <div>
+                  <label>稅務確認狀態</label>
+                  <select><option>全部</option><option>系統預判</option><option>會計待補件</option><option>稅務待確認</option><option>稅務已確認</option></select>
+                </div>
+                <div>
+                  <label>ERP 狀態</label>
+                  <select><option>全部</option><option>未拋轉</option><option>待拋轉</option><option>已拋轉</option><option>拋轉失敗</option></select>
+                </div>
+                <div>
+                  <label>稅務事件類型</label>
+                  <select><option>全部</option><option>土地款</option><option>房屋款</option><option>暫收款分配</option><option>房屋稅</option><option>地價稅</option><option>出售清算</option></select>
+                </div>
+                <div>
+                  <label>發生日期</label>
+                  <input placeholder="2026-06-01 ~ 2026-06-30">
+                </div>
+              </div>
+              <div class="search-actions">
+                <button class="btn btn-primary">🔍 查詢</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="copy-unit" data-axure-unit="售購紀錄列表">
+            <div class="tablebar">
+              <button class="btn btn-primary">＋ 新增稅務事件</button>
+              <div class="count">符合查詢結果項目共 3 筆</div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>售購紀錄</th>
+                  <th>申請人</th>
+                  <th>戶號</th>
+                  <th>目前階段</th>
+                  <th>稅務狀態</th>
+                  <th>ERP</th>
+                  <th>功能</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>TRX-2026-0001<br><span class="pill gray">第 1 次持有</span></td>
+                  <td>王○明<br><span class="pill green">資格通過</span></td>
+                  <td>航空城A11 / A棟 / A10F219<br>桃園市蘆竹區誠聖三路219號10樓</td>
+                  <td><span class="pill green">買房中</span><span class="pill orange">對保/完稅中</span></td>
+                  <td><span class="pill red">2 筆待確認</span><span class="pill orange">土地/房屋已拆分</span></td>
+                  <td><span class="pill gray">待拋轉</span></td>
+                  <td><div class="actions"><button class="btn btn-outline">檢視</button><button class="btn btn-outline">編修</button><button class="btn btn-outline">戶號歷程</button></div></td>
+                </tr>
+                <tr>
+                  <td>TRX-2025-0188<br><span class="pill gray">第 1 次持有</span></td>
+                  <td>林○婷<br><span class="pill green">持有中</span></td>
+                  <td>航空城A11 / B棟 / B10F233<br>桃園市蘆竹區誠聖三路233號10樓</td>
+                  <td><span class="pill green">持有中</span><span class="pill orange">使用期間</span></td>
+                  <td><span class="pill orange">房屋稅待憑證</span></td>
+                  <td><span class="pill green">已拋轉</span></td>
+                  <td><div class="actions"><button class="btn btn-outline">檢視</button><button class="btn btn-outline">補附件</button><button class="btn btn-outline">戶號歷程</button></div></td>
+                </tr>
+                <tr>
+                  <td>TRX-2028-0039<br><span class="pill orange">第 2 次持有</span></td>
+                  <td>陳○華<br><span class="pill orange">再次申請</span></td>
+                  <td>航空城A11 / A棟 / A10F219<br><span class="pill orange">前手：TRX-2026-0001</span></td>
+                  <td><span class="pill red">出售清算</span><span class="pill orange">清算中</span></td>
+                  <td><span class="pill red">修繕費待確認</span><span class="pill red">違約金待確認</span></td>
+                  <td><span class="pill red">拋轉失敗</span></td>
+                  <td><div class="actions"><button class="btn btn-outline">檢視</button><button class="btn btn-outline">清算</button><button class="btn btn-danger">重拋 ERP</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="copy-unit" data-axure-unit="詳情頁 Tabs">
+            <div class="tabs">
+              <div class="tab active">基本資料</div>
+              <div class="tab">稅務事件</div>
+              <div class="tab">款項明細</div>
+              <div class="tab">憑證附件</div>
+              <div class="tab">戶號買售歷程</div>
+              <div class="tab">ERP 紀錄</div>
+            </div>
+            <div class="detail-grid">
+              <div class="panel">
+                <h3>售購紀錄摘要</h3>
+                <div class="kv"><div>售購紀錄</div><div>TRX-2026-0001</div></div>
+                <div class="kv"><div>申請人</div><div>王○明（個資欄位於列表遮罩）</div></div>
+                <div class="kv"><div>戶號</div><div>航空城A11 / A棟 / A10F219</div></div>
+                <div class="kv"><div>目前階段</div><div>買房中 / 對保完稅中</div></div>
+                <div class="kv"><div>限制檢核</div><div><span class="pill green">目前無其他有效持有</span></div></div>
+              </div>
+              <div class="panel">
+                <h3>稅務事件摘要</h3>
+                <div class="kv"><div>土地款</div><div>免稅 / 會計已確認</div></div>
+                <div class="kv"><div>房屋款</div><div>應稅 / 稅務待確認</div></div>
+                <div class="kv"><div>暫收款</div><div>房屋稅、地價稅、地政規費待憑證</div></div>
+                <div class="kv"><div>ERP</div><div>待拋轉，payload 須含明細稅務分類</div></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="copy-unit" data-axure-unit="戶號買售歷程">
+            <div class="tabs">
+              <div class="tab active">戶號買售歷程</div>
+            </div>
+            <div class="panel">
+              <h3>航空城A11 / A棟 / A10F219</h3>
+              <div class="timeline">
+                <div class="step">
+                  <strong>TRX-2026-0001 王○明</strong>
+                  <div>資格通過 → 選屋 → 簽約 → 對保/完稅中</div>
+                  <div><span class="pill orange">土地/房屋拆分</span><span class="pill red">房屋款稅務待確認</span></div>
+                </div>
+                <div class="step">
+                  <strong>TRX-2028-0039 陳○華</strong>
+                  <div>由前手出售承接；清算中，尚未結案</div>
+                  <div><span class="pill red">修繕費待確認</span><span class="pill red">ERP 拋轉失敗</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="component-note">
+            <strong>Axure 使用方式：</strong>
+            本頁每個可複製區塊皆標有 <code>data-axure-unit</code>，可在瀏覽器中選取對應區塊複製，或依「查詢條件 / 售購紀錄列表 / 詳情 Tabs / 戶號買售歷程」拆成 Axure RP9 的最小元件。畫面用現有後台的查詢區、表格、按鈕、tab、pill state 風格臨摹，不綁定任何前端框架。
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
